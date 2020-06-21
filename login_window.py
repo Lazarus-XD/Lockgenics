@@ -6,11 +6,12 @@ class Ui_LoginWindow(object):
         LoginWindow.setObjectName("Login")
         LoginWindow.setFixedSize(800, 600)
 
-        #Background setup
+        #background setup
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(106, 0, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
         LoginWindow.setPalette(palette)
 
         #text white color setup
@@ -18,6 +19,7 @@ class Ui_LoginWindow(object):
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
 
         #icon setup
         icon = QtGui.QIcon()
