@@ -1,5 +1,6 @@
 import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
+from data_window import Ui_DataWindow
 
 class Ui_LoginWindow(object):
     def setupUi(self, LoginWindow):
@@ -117,12 +118,26 @@ class Ui_LoginWindow(object):
         self.usernameLabel.setText(_translate("LoginWindow", "Username:"))
         self.passwordLabel.setText(_translate("LoginWindow", "Password:"))
         self.createUserButton.setText(_translate("LoginWindow", "CREATE NEW USER"))
+        self.usernameInput.setPlaceholderText(_translate("LoginWindow", "Enter Username"))
+        self.passwordInput.setPlaceholderText(_translate("LoginWindow", "Enter Password"))
+
+        self.loginButton.clicked.connect(self.loginButtonAction)
+
+    def loginButtonAction(self):
+        self.openDataWindow()
+
+    def openDataWindow(self):
+        self.window = QtWidgets.QMainWindow()
+        self.ui = Ui_DataWindow()
+        self.ui.setupUi(self.window)
+        LoginWindow.hide()
+        self.window.show()
 
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
-    Login = QtWidgets.QMainWindow()
+    LoginWindow = QtWidgets.QMainWindow()
     ui = Ui_LoginWindow()
-    ui.setupUi(Login)
-    Login.show()
+    ui.setupUi(LoginWindow)
+    LoginWindow.show()
     sys.exit(app.exec_())

@@ -1,4 +1,3 @@
-import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_DataWindow(object):
@@ -19,7 +18,7 @@ class Ui_DataWindow(object):
         #font setup
         font = QtGui.QFont()
         font.setFamily("Bahnschrift SemiLight SemiConde")
-        font.setPointSize(12)
+        font.setPointSize(14)
         DataWindow.setFont(font)
 
         #icon setup
@@ -38,36 +37,36 @@ class Ui_DataWindow(object):
         self.centralwidget = QtWidgets.QWidget(DataWindow)
         self.centralwidget.setObjectName("centralwidget")
 
-        #button setup
-        self.addServiceButton = QtWidgets.QPushButton(self.centralwidget)
-        self.addServiceButton.setGeometry(QtCore.QRect(10, 10, 161, 41))
-        self.addServiceButton.setFont(font)
-        self.addServiceButton.setObjectName("addServiceButton")
+        # line edit boxes setup
+        self.usernameEdit = QtWidgets.QLineEdit(self.centralwidget)
+        self.usernameEdit.setGeometry(QtCore.QRect(50, 135, 701, 41))
+        self.usernameEdit.setFont(font)
+        self.usernameEdit.setAlignment(QtCore.Qt.AlignCenter)
+        self.usernameEdit.setReadOnly(True)
+        self.usernameEdit.setObjectName("usernameEdit")
 
-        self.logoutButton = QtWidgets.QPushButton(self.centralwidget)
-        self.logoutButton.setGeometry(QtCore.QRect(710, 10, 81, 41))
-        self.logoutButton.setFont(font)
-        self.logoutButton.setObjectName("logoutButton")
+        self.passwordEdit = QtWidgets.QLineEdit(self.centralwidget)
+        self.passwordEdit.setGeometry(QtCore.QRect(50, 255, 701, 41))
+        self.passwordEdit.setFont(font)
+        self.passwordEdit.setAlignment(QtCore.Qt.AlignCenter)
+        self.passwordEdit.setObjectName("passwordEdit")
 
-        self.editButton = QtWidgets.QPushButton(self.centralwidget)
-        self.editButton.setGeometry(QtCore.QRect(520, 10, 121, 41))
-        self.editButton.setFont(font)
-        self.editButton.setObjectName("editButton")
+        self.emailEdit = QtWidgets.QLineEdit(self.centralwidget)
+        self.emailEdit.setGeometry(QtCore.QRect(50, 375, 701, 41))
+        self.emailEdit.setFont(font)
+        self.emailEdit.setAlignment(QtCore.Qt.AlignCenter)
+        self.emailEdit.setObjectName("emailEdit")
 
-        #combo box setup
-        self.servicesComboBox = QtWidgets.QComboBox(self.centralwidget)
-        self.servicesComboBox.setGeometry(QtCore.QRect(300, 10, 181, 41))
-        font.setWeight(50)
-        self.servicesComboBox.setFont(font)
-        self.servicesComboBox.setLayoutDirection(QtCore.Qt.LeftToRight)
-        self.servicesComboBox.setSizeAdjustPolicy(QtWidgets.QComboBox.AdjustToContentsOnFirstShow)
-        self.servicesComboBox.setObjectName("servicesComboBox")
-        self.servicesComboBox.addItem("")
+        self.urlEdit = QtWidgets.QLineEdit(self.centralwidget)
+        self.urlEdit.setGeometry(QtCore.QRect(50, 495, 701, 41))
+        self.urlEdit.setFont(font)
+        self.urlEdit.setAlignment(QtCore.Qt.AlignCenter)
+        self.urlEdit.setObjectName("urlEdit")
 
         #label setup
-        font.setPointSize(14)
+        font.setFamily("Bahnschrift SemiBold SemiConden")
         self.label = QtWidgets.QLabel(self.centralwidget)
-        self.label.setGeometry(QtCore.QRect(210, 10, 91, 41))
+        self.label.setGeometry(QtCore.QRect(280, 20, 91, 41))
         self.label.setPalette(palette)
         self.label.setFont(font)
         self.label.setObjectName("label")
@@ -96,31 +95,27 @@ class Ui_DataWindow(object):
         self.label_5.setFont(font)
         self.label_5.setObjectName("label_5")
 
-        #line edit boxes setup
-        self.usernameEdit = QtWidgets.QLineEdit(self.centralwidget)
-        self.usernameEdit.setGeometry(QtCore.QRect(50, 135, 701, 41))
-        self.usernameEdit.setFont(font)
-        self.usernameEdit.setAlignment(QtCore.Qt.AlignCenter)
-        self.usernameEdit.setReadOnly(True)
-        self.usernameEdit.setObjectName("usernameEdit")
+        #button setup
+        font.setPointSize(12)
+        self.addServiceButton = QtWidgets.QPushButton(self.centralwidget)
+        self.addServiceButton.setGeometry(QtCore.QRect(50, 20, 161, 41))
+        self.addServiceButton.setFont(font)
+        self.addServiceButton.setObjectName("addServiceButton")
 
-        self.passwordEdit = QtWidgets.QLineEdit(self.centralwidget)
-        self.passwordEdit.setGeometry(QtCore.QRect(50, 255, 701, 41))
-        self.passwordEdit.setFont(font)
-        self.passwordEdit.setAlignment(QtCore.Qt.AlignCenter)
-        self.passwordEdit.setObjectName("passwordEdit")
+        self.editButton = QtWidgets.QPushButton(self.centralwidget)
+        self.editButton.setGeometry(QtCore.QRect(630, 20, 125, 41))
+        self.editButton.setFont(font)
+        self.editButton.setObjectName("editButton")
 
-        self.emailEdit = QtWidgets.QLineEdit(self.centralwidget)
-        self.emailEdit.setGeometry(QtCore.QRect(50, 375, 701, 41))
-        self.emailEdit.setFont(font)
-        self.emailEdit.setAlignment(QtCore.Qt.AlignCenter)
-        self.emailEdit.setObjectName("emailEdit")
-
-        self.urlEdit = QtWidgets.QLineEdit(self.centralwidget)
-        self.urlEdit.setGeometry(QtCore.QRect(50, 495, 701, 41))
-        self.urlEdit.setFont(font)
-        self.urlEdit.setAlignment(QtCore.Qt.AlignCenter)
-        self.urlEdit.setObjectName("urlEdit")
+        #combo box setup
+        self.servicesComboBox = QtWidgets.QComboBox(self.centralwidget)
+        self.servicesComboBox.setGeometry(QtCore.QRect(380, 20, 181, 41))
+        font.setWeight(50)
+        self.servicesComboBox.setFont(font)
+        self.servicesComboBox.setLayoutDirection(QtCore.Qt.LeftToRight)
+        self.servicesComboBox.setSizeAdjustPolicy(QtWidgets.QComboBox.AdjustToContentsOnFirstShow)
+        self.servicesComboBox.setObjectName("servicesComboBox")
+        self.servicesComboBox.addItem("")
 
         DataWindow.setCentralWidget(self.centralwidget)
 
@@ -131,7 +126,6 @@ class Ui_DataWindow(object):
         _translate = QtCore.QCoreApplication.translate
         DataWindow.setWindowTitle(_translate("DataWindow", "Password Manager"))
         self.addServiceButton.setText(_translate("DataWindow", "Add New Service"))
-        self.logoutButton.setText(_translate("DataWindow", "Logout"))
         self.servicesComboBox.setItemText(0, _translate("DataWindow", "facebook"))
         self.label.setText(_translate("DataWindow", "Services:"))
         self.label_2.setText(_translate("DataWindow", "Username:"))
@@ -146,10 +140,10 @@ class Ui_DataWindow(object):
         self.urlEdit.setPlaceholderText(_translate("DataWindow", "Enter URL of Service"))
 
 
-if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
-    DataWindow = QtWidgets.QMainWindow()
-    ui = Ui_DataWindow()
-    ui.setupUi(DataWindow)
-    DataWindow.show()
-    sys.exit(app.exec_())
+# if __name__ == "__main__":
+#     app = QtWidgets.QApplication(sys.argv)
+#     DataWindow = QtWidgets.QMainWindow()
+#     ui = Ui_DataWindow()
+#     ui.setupUi(DataWindow)
+#     DataWindow.show()
+#     sys.exit(app.exec_())

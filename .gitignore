@@ -1,3 +1,4 @@
 /.idea
+/__pycache__
 login_window.ui
 data_window.ui
