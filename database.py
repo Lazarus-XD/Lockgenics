@@ -126,23 +126,16 @@ def createTable():
                      check_key TEXT)""")
     conn.commit()
 
-def main():
+def main(username, password):
     createUser = "n"
     while True:
-        username = input("Enter your username: ")
         cur.execute("SELECT COUNT(username) FROM info WHERE username = ?", (username,))
         record = cur.fetchone()[0]
         if record == 0:
-            while True:
-                createUser = input("Username does not exist. Do you want to create a new? Enter y or n: ")
-                if createUser == "y" or createUser == "n":
-                    break
-
             if createUser == "y":
                 storeUser(username)
                 key = generateKey(username)
                 print("Your info has been stored in the database.")
-                break
 
         if createUser == "n" and record != 0:
             while True:
@@ -170,9 +163,8 @@ def main():
             break
 
 
-if __name__ == "__main__":
-    conn = sqlite3.connect("info.db")
-    cur = conn.cursor()
-    createTable()
-    main()
-    conn.close()
+conn = sqlite3.connect("info.db")
+cur = conn.cursor()
+createTable()
+# main()
+conn.close()
