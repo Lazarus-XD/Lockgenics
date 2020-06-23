@@ -124,41 +124,57 @@ class Ui_LoginWindow(object):
         self.passwordInput.setPlaceholderText(_translate("LoginWindow", "Enter Password"))
 
         self.loginButton.clicked.connect(self.loginButtonAction)
-        self.createUserButton.clicked.connect((self.createUser))
-
-    def createUser(self):
-        # username = Ui_createUserWidget().newUserInput.text()
-        # storeUser(username)
-        # key = generateKey(username)
-
-        self.openNewUserWindow()
+        self.createUserButton.clicked.connect(self.openNewUserWindow)
 
     def loginButtonAction(self):
         username = self.usernameInput.text()
         password = self.passwordInput.text()
-
-        self.openDataWindow()
+        if db.checkPass(username, password):
+            self.openDataWindow()
 
     def openNewUserWindow(self):
-        self.new_user_window = QtWidgets.QMainWindow()
-        self.ui = Ui_createUserWidget()
-        self.ui.setupUi(self.new_user_window)
-        self.new_user_window.show()
-        self.ui.createUserButton.clicked.connect(self.newUserButtonAction)
+        self.newUserWindow = QtWidgets.QMainWindow()
+        self.newUserUI = Ui_createUserWidget()
+        self.newUserUI.setupUi(self.newUserWindow)
+        self.newUserWindow.show()
+        self.newUserUI.createUserButton.clicked.connect(self.newUserButtonAction)
 
     def newUserButtonAction(self):
-        self.new_user_window.hide()
-        self.openDataWindow()
+        msg = QtWidgets.QMessageBox()
+        username = self.newUserUI.newUserInput.text()
+        db.cur.execute("SELECT COUNT(username) FROM info WHERE username = ?", (username,))
+        record = db.cur.fetchone()[0]
+        if record == 0 and username != "":
+            db.storeUser(username)
+            key = db.generateKey(username)
+            msg.setWindowTitle("Information")
+            msg.setText("The master key was stored in {}(key).txt\nStore it in a secure place!".format(username))
+            msg.setIcon(QtWidgets.QMessageBox.Information)
+            msg.exec_()
+            self.newUserWindow.hide()
+            self.openDataWindow()
+        elif username == "":
+            msg.setWindowTitle("Error")
+            msg.setText("Enter A Valid Username!")
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            msg.exec_()
+        else:
+            msg.setWindowTitle("Error")
+            msg.setText("Username Already Exists!")
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            msg.exec_()
 
     def openDataWindow(self):
-        self.data_window = QtWidgets.QMainWindow()
-        self.ui = Ui_DataWindow()
-        self.ui.setupUi(self.data_window)
+        self.dataWindow = QtWidgets.QMainWindow()
+        self.dataWindowUI = Ui_DataWindow()
+        self.dataWindowUI.setupUi(self.dataWindow)
         LoginWindow.hide()
-        self.data_window.show()
+        self.dataWindow.show()
 
 
 if __name__ == "__main__":
+    db = Database()
+    db.createTable()
     app = QtWidgets.QApplication(sys.argv)
     LoginWindow = QtWidgets.QMainWindow()
     ui = Ui_LoginWindow()

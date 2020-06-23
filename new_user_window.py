@@ -7,10 +7,10 @@ class Ui_createUserWidget():
 
         #background setup
         palette = QtGui.QPalette()
-        brush = QtGui.QBrush(QtGui.QColor(106, 0, 255))
+        brush = QtGui.QBrush(QtGui.QColor(135, 0, 202))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(106, 0, 255))
+        brush = QtGui.QBrush(QtGui.QColor(135, 0, 202))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
         createUserWidget.setPalette(palette)
