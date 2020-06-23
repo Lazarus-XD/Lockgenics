@@ -1,13 +1,20 @@
 import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QMainWindow
 from data_window import Ui_DataWindow
 from new_user_window import Ui_createUserWidget
 from database import *
 
-class Ui_LoginWindow(object):
-    def setupUi(self, LoginWindow):
-        LoginWindow.setObjectName("Login")
-        LoginWindow.setFixedSize(800, 600)
+class Ui_LoginWindow(QMainWindow):
+    def __init__(self):
+        super(Ui_LoginWindow, self).__init__()
+        self.setupUi()
+        self.db = Database()
+        self.db.createTable()
+
+    def setupUi(self):
+        self.setObjectName("Login")
+        self.setFixedSize(800, 600)
 
         #background setup
         palette = QtGui.QPalette()
@@ -15,7 +22,7 @@ class Ui_LoginWindow(object):
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
-        LoginWindow.setPalette(palette)
+        self.setPalette(palette)
 
         #text white color setup
         palette = QtGui.QPalette()
@@ -27,13 +34,13 @@ class Ui_LoginWindow(object):
         #icon setup
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        LoginWindow.setWindowIcon(icon)
+        self.setWindowIcon(icon)
 
         #font setup
         font = QtGui.QFont()
         font.setFamily("Bahnschrift SemiBold SemiConden")
 
-        self.centralwidget = QtWidgets.QWidget(LoginWindow)
+        self.centralwidget = QtWidgets.QWidget(self)
         self.centralwidget.setObjectName("centralwidget")
 
         #label setup
@@ -41,7 +48,7 @@ class Ui_LoginWindow(object):
         self.titleLabel.setGeometry(QtCore.QRect(218, 30, 371, 61))
         self.titleLabel.setPalette(palette)
         font.setPointSize(30)
-        font.setBold(True)
+        font.setUnderline(True)
         self.titleLabel.setFont(font)
         self.titleLabel.setObjectName("titleLabel")
 
@@ -49,25 +56,25 @@ class Ui_LoginWindow(object):
         self.titleLabel2.setGeometry(QtCore.QRect(255, 90, 301, 61))
         self.titleLabel2.setPalette(palette)
         font.setPointSize(18)
-        font.setBold(True)
+        font.setUnderline(False)
         self.titleLabel2.setFont(font)
         self.titleLabel2.setObjectName("titleLabel2")
 
         self.usernameLabel = QtWidgets.QLabel(self.centralwidget)
-        self.usernameLabel.setGeometry(QtCore.QRect(155, 210, 121, 31))
+        self.usernameLabel.setGeometry(QtCore.QRect(105, 210, 121, 31))
         self.usernameLabel.setPalette(palette)
         font.setPointSize(14)
         self.usernameLabel.setFont(font)
         self.usernameLabel.setObjectName("usernameLabel")
 
         self.passwordLabel = QtWidgets.QLabel(self.centralwidget)
-        self.passwordLabel.setGeometry(QtCore.QRect(155, 310, 151, 31))
+        self.passwordLabel.setGeometry(QtCore.QRect(105, 310, 151, 31))
         self.passwordLabel.setPalette(palette)
         self.passwordLabel.setFont(font)
         self.passwordLabel.setObjectName("passwordLabel")
 
         self.borderLabel = QtWidgets.QLabel(self.centralwidget)
-        self.borderLabel.setGeometry(QtCore.QRect(140, 200, 521, 211))
+        self.borderLabel.setGeometry(QtCore.QRect(90, 200, 621, 211))
         self.borderLabel.setPalette(palette)
         self.borderLabel.setFrameShape(QtWidgets.QFrame.Box)
         self.borderLabel.setLineWidth(2)
@@ -77,13 +84,13 @@ class Ui_LoginWindow(object):
         #text input setup
         font.setPointSize(12)
         self.usernameInput = QtWidgets.QLineEdit(self.centralwidget)
-        self.usernameInput.setGeometry(QtCore.QRect(150, 250, 500, 40))
+        self.usernameInput.setGeometry(QtCore.QRect(100, 250, 601, 40))
         self.usernameInput.setFont(font)
         self.usernameInput.setAlignment(QtCore.Qt.AlignCenter)
         self.usernameInput.setObjectName("usernameInput")
 
         self.passwordInput = QtWidgets.QLineEdit(self.centralwidget)
-        self.passwordInput.setGeometry(QtCore.QRect(150, 350, 500, 40))
+        self.passwordInput.setGeometry(QtCore.QRect(100, 350, 601, 40))
         self.passwordInput.setFont(font)
         self.passwordInput.setInputMethodHints(QtCore.Qt.ImhNone)
         self.passwordInput.setCursorPosition(0)
@@ -106,10 +113,16 @@ class Ui_LoginWindow(object):
         self.createUserButton.setFont(font)
         self.createUserButton.setObjectName("pushButton")
 
-        LoginWindow.setCentralWidget(self.centralwidget)
+        self.exitButton = QtWidgets.QPushButton(self.centralwidget)
+        self.exitButton.setGeometry(QtCore.QRect(712, 540, 71, 41))
+        self.exitButton.setFont(font)
+        self.exitButton.setObjectName("exitButton")
+        self.exitButton.setToolTip("Exit application and close database connection")
 
-        self.retranslateUi(LoginWindow)
-        QtCore.QMetaObject.connectSlotsByName(LoginWindow)
+        self.setCentralWidget(self.centralwidget)
+
+        self.retranslateUi(self)
+        QtCore.QMetaObject.connectSlotsByName(self)
 
     def retranslateUi(self, LoginWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -120,42 +133,53 @@ class Ui_LoginWindow(object):
         self.usernameLabel.setText(_translate("LoginWindow", "Username:"))
         self.passwordLabel.setText(_translate("LoginWindow", "Password:"))
         self.createUserButton.setText(_translate("LoginWindow", "CREATE NEW USER"))
+        self.exitButton.setText(_translate("DataWindow", "EXIT"))
         self.usernameInput.setPlaceholderText(_translate("LoginWindow", "Enter Username"))
         self.passwordInput.setPlaceholderText(_translate("LoginWindow", "Enter Password"))
 
+        #button clicking action
         self.loginButton.clicked.connect(self.loginButtonAction)
         self.createUserButton.clicked.connect(self.openNewUserWindow)
+        self.exitButton.clicked.connect(self.exitButtonAction)
+
+    def exitButtonAction(self):
+        self.db.conn.close()
+        self.close()
 
     def loginButtonAction(self):
-        username = self.usernameInput.text()
-        password = self.passwordInput.text()
-        if db.checkPass(username, password):
+        self.username = self.usernameInput.text()
+        self.password = self.passwordInput.text()
+        if self.db.checkPass(self.username, self.password):
             self.openDataWindow()
+        else:
+            msg = QtWidgets.QMessageBox()
+            msg.setWindowTitle("Error")
+            msg.setText("Invalid Username or Password!")
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            msg.exec_()
 
     def openNewUserWindow(self):
-        self.newUserWindow = QtWidgets.QMainWindow()
-        self.newUserUI = Ui_createUserWidget()
-        self.newUserUI.setupUi(self.newUserWindow)
+        self.newUserWindow = Ui_createUserWidget()
         self.newUserWindow.show()
-        self.newUserUI.createUserButton.clicked.connect(self.newUserButtonAction)
+        self.newUserWindow.createUserButton.clicked.connect(self.newUserButtonAction)
 
     def newUserButtonAction(self):
         msg = QtWidgets.QMessageBox()
-        username = self.newUserUI.newUserInput.text()
-        db.cur.execute("SELECT COUNT(username) FROM info WHERE username = ?", (username,))
-        record = db.cur.fetchone()[0]
-        if record == 0 and username != "":
-            db.storeUser(username)
-            key = db.generateKey(username)
+        self.username = self.newUserWindow.newUserInput.text()
+        self.db.cur.execute("SELECT COUNT(username) FROM info WHERE username = ?", (self.username,))
+        record = self.db.cur.fetchone()[0]
+        if record == 0 and self.username != "":
+            self.db.storeUser(self.username)
+            key = self.db.generateKey(self.username)
             msg.setWindowTitle("Information")
-            msg.setText("The master key was stored in {}(key).txt\nStore it in a secure place!".format(username))
+            msg.setText("The master key was stored in {}(key).txt\nStore it in a secure place!".format(self.username))
             msg.setIcon(QtWidgets.QMessageBox.Information)
             msg.exec_()
             self.newUserWindow.hide()
             self.openDataWindow()
-        elif username == "":
+        elif self.username == "":
             msg.setWindowTitle("Error")
-            msg.setText("Enter A Valid Username!")
+            msg.setText("Username Field Cannot be Empty!")
             msg.setIcon(QtWidgets.QMessageBox.Critical)
             msg.exec_()
         else:
@@ -165,19 +189,14 @@ class Ui_LoginWindow(object):
             msg.exec_()
 
     def openDataWindow(self):
-        self.dataWindow = QtWidgets.QMainWindow()
-        self.dataWindowUI = Ui_DataWindow()
-        self.dataWindowUI.setupUi(self.dataWindow)
-        LoginWindow.hide()
+        self.dataWindow = Ui_DataWindow()
+        self.hide()
         self.dataWindow.show()
+        self.dataWindow.exitButton.clicked.connect(self.exitButtonAction)
 
 
 if __name__ == "__main__":
-    db = Database()
-    db.createTable()
     app = QtWidgets.QApplication(sys.argv)
-    LoginWindow = QtWidgets.QMainWindow()
-    ui = Ui_LoginWindow()
-    ui.setupUi(LoginWindow)
+    LoginWindow = Ui_LoginWindow()
     LoginWindow.show()
     sys.exit(app.exec_())

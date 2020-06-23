@@ -1,9 +1,15 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QMainWindow
 
-class Ui_DataWindow(object):
-    def setupUi(self, DataWindow):
-        DataWindow.setObjectName("DataWindow")
-        DataWindow.setFixedSize(800, 600)
+class Ui_DataWindow(QMainWindow):
+    def __init__(self):
+        super(Ui_DataWindow, self).__init__()
+        self.setupUi()
+        self.counter = 0
+
+    def setupUi(self):
+        self.setObjectName("DataWindow")
+        self.setFixedSize(800, 600)
 
         #background setup
         palette = QtGui.QPalette()
@@ -13,18 +19,18 @@ class Ui_DataWindow(object):
         brush = QtGui.QBrush(QtGui.QColor(106, 0, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
-        DataWindow.setPalette(palette)
+        self.setPalette(palette)
 
         #font setup
         font = QtGui.QFont()
         font.setFamily("Bahnschrift SemiLight SemiConde")
         font.setPointSize(14)
-        DataWindow.setFont(font)
+        self.setFont(font)
 
         #icon setup
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        DataWindow.setWindowIcon(icon)
+        self.setWindowIcon(icon)
 
         #text white color setup
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
@@ -34,7 +40,7 @@ class Ui_DataWindow(object):
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
 
-        self.centralwidget = QtWidgets.QWidget(DataWindow)
+        self.centralwidget = QtWidgets.QWidget(self)
         self.centralwidget.setObjectName("centralwidget")
 
         # line edit boxes setup
@@ -42,7 +48,6 @@ class Ui_DataWindow(object):
         self.usernameEdit.setGeometry(QtCore.QRect(50, 135, 701, 41))
         self.usernameEdit.setFont(font)
         self.usernameEdit.setAlignment(QtCore.Qt.AlignCenter)
-        self.usernameEdit.setReadOnly(True)
         self.usernameEdit.setObjectName("usernameEdit")
 
         self.passwordEdit = QtWidgets.QLineEdit(self.centralwidget)
@@ -63,10 +68,15 @@ class Ui_DataWindow(object):
         self.urlEdit.setAlignment(QtCore.Qt.AlignCenter)
         self.urlEdit.setObjectName("urlEdit")
 
+        self.usernameEdit.setReadOnly(True)
+        self.passwordEdit.setReadOnly(True)
+        self.emailEdit.setReadOnly(True)
+        self.urlEdit.setReadOnly(True)
+
         #label setup
         font.setFamily("Bahnschrift SemiBold SemiConden")
         self.label = QtWidgets.QLabel(self.centralwidget)
-        self.label.setGeometry(QtCore.QRect(280, 20, 91, 41))
+        self.label.setGeometry(QtCore.QRect(230, 20, 91, 41))
         self.label.setPalette(palette)
         self.label.setFont(font)
         self.label.setObjectName("label")
@@ -103,13 +113,20 @@ class Ui_DataWindow(object):
         self.addServiceButton.setObjectName("addServiceButton")
 
         self.editButton = QtWidgets.QPushButton(self.centralwidget)
-        self.editButton.setGeometry(QtCore.QRect(630, 20, 125, 41))
+        self.editButton.setGeometry(QtCore.QRect(530, 20, 125, 41))
         self.editButton.setFont(font)
         self.editButton.setObjectName("editButton")
+        self.editButton.setToolTip("Edit service information")
+
+        self.exitButton = QtWidgets.QPushButton(self.centralwidget)
+        self.exitButton.setGeometry(QtCore.QRect(690, 20, 61, 41))
+        self.exitButton.setFont(font)
+        self.exitButton.setObjectName("exitButton")
+        self.exitButton.setToolTip("Exit application and close database connection")
 
         #combo box setup
         self.servicesComboBox = QtWidgets.QComboBox(self.centralwidget)
-        self.servicesComboBox.setGeometry(QtCore.QRect(380, 20, 181, 41))
+        self.servicesComboBox.setGeometry(QtCore.QRect(320, 20, 181, 41))
         font.setWeight(50)
         self.servicesComboBox.setFont(font)
         self.servicesComboBox.setLayoutDirection(QtCore.Qt.LeftToRight)
@@ -117,10 +134,10 @@ class Ui_DataWindow(object):
         self.servicesComboBox.setObjectName("servicesComboBox")
         self.servicesComboBox.addItem("")
 
-        DataWindow.setCentralWidget(self.centralwidget)
+        self.setCentralWidget(self.centralwidget)
 
-        self.retranslateUi(DataWindow)
-        QtCore.QMetaObject.connectSlotsByName(DataWindow)
+        self.retranslateUi(self)
+        QtCore.QMetaObject.connectSlotsByName(self)
 
     def retranslateUi(self, DataWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -133,17 +150,49 @@ class Ui_DataWindow(object):
         self.label_4.setText(_translate("DataWindow", "Email:"))
         self.label_5.setText(_translate("DataWindow", "URL:"))
         self.editButton.setText(_translate("DataWindow", "Edit"))
+        self.exitButton.setText(_translate("DataWindow", "Exit"))
         self.usernameEdit.setText(_translate("DataWindow", "RizwanAhsan"))
         self.usernameEdit.setPlaceholderText(_translate("DataWindow", "Enter Username"))
         self.passwordEdit.setPlaceholderText(_translate("DataWindow", "Enter Password"))
         self.emailEdit.setPlaceholderText(_translate("DataWindow", "Enter Email Address"))
         self.urlEdit.setPlaceholderText(_translate("DataWindow", "Enter URL of Service"))
 
+        #button clicking action
+        self.editButton.clicked.connect(self.editButtonAction)
+        self.addServiceButton.clicked.connect(self.addServiceButtonAction)
+        self.exitButton.clicked.connect(self.close)
 
-# if __name__ == "__main__":
-#     app = QtWidgets.QApplication(sys.argv)
-#     DataWindow = QtWidgets.QMainWindow()
-#     ui = Ui_DataWindow()
-#     ui.setupUi(DataWindow)
-#     DataWindow.show()
-#     sys.exit(app.exec_())
+
+    def editButtonAction(self):
+        _translate = QtCore.QCoreApplication.translate
+        self.counter += 1
+
+        def setReadyOnly():
+            self.usernameEdit.setReadOnly(True)
+            self.passwordEdit.setReadOnly(True)
+            self.emailEdit.setReadOnly(True)
+            self.urlEdit.setReadOnly(True)
+
+        def setEdit():
+            self.usernameEdit.setReadOnly(False)
+            self.passwordEdit.setReadOnly(False)
+            self.emailEdit.setReadOnly(False)
+            self.urlEdit.setReadOnly(False)
+
+        if self.counter % 2 == 0:
+            self.editButton.setText(_translate("DataWindow", "Edit"))
+            setReadyOnly()
+        else:
+            self.editButton.setText(_translate("DataWindow", "Save Changes"))
+            setEdit()
+
+    def addServiceButtonAction(self):
+        pass
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    DataWindow = Ui_DataWindow()
+    DataWindow.show()
+    sys.exit(app.exec_())
