@@ -1,11 +1,16 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QMainWindow
+from database import *
+from new_service_window import Ui_newServiceWidget
 
 class Ui_DataWindow(QMainWindow):
     def __init__(self):
         super(Ui_DataWindow, self).__init__()
         self.setupUi()
+        self.db = Database()
         self.counter = 0
+        self.username = None
+        self.password = None
 
     def setupUi(self):
         self.setObjectName("DataWindow")
@@ -187,7 +192,19 @@ class Ui_DataWindow(QMainWindow):
             setEdit()
 
     def addServiceButtonAction(self):
+        self.newServiceWindow = Ui_newServiceWidget()
+        self.newServiceWindow.show()
+        self.newServiceWindow.confirmButton.clicked.connect(self.confirmButtonAction)
+        self.newServiceWindow.genPassButton.clicked.connect(self.genPassButtonAction)
+
+    def confirmButtonAction(self):
         pass
+
+    def genPassButtonAction(self):
+        _translate = QtCore.QCoreApplication.translate
+        Pass = self.db.generatePass(self.password)
+        print(Pass)
+        self.newServiceWindow.passwordInput.setText(_translate("newServiceWidget", "{}".format(Pass)))
 
 
 if __name__ == "__main__":

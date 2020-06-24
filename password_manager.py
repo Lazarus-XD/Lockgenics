@@ -192,6 +192,8 @@ class Ui_LoginWindow(QMainWindow):
         self.dataWindow = Ui_DataWindow()
         self.hide()
         self.dataWindow.show()
+        self.dataWindow.username = self.username
+        self.dataWindow.password = self.password
         self.dataWindow.exitButton.clicked.connect(self.exitButtonAction)
 
 
