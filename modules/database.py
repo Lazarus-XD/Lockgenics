@@ -16,11 +16,6 @@ class Database():
 
     def addServiceAndPass(self, service, username, password, key):
         """Store the randomly generated password in the selected service column"""
-        columns = [i[1] for i in self.cur.execute("PRAGMA table_info(info)")]
-        if service not in columns:
-            self.cur.execute("ALTER TABLE info ADD COLUMN '{}' TEXT".format(service))
-            self.conn.commit()
-
         self.cur.execute("SELECT COUNT({}) FROM info WHERE username = ?".format(service), (username,))
         record = self.cur.fetchone()[0]
 
@@ -77,7 +72,7 @@ class Database():
         record = self.cur.fetchall()
         columns = [i[1] for i in self.cur.execute("PRAGMA table_info(info)")]
         f = Fernet(key)
-        print()
+
         for row in record:
             if len(row) == 2:
                 print("You have no stored passwords!")
@@ -105,7 +100,6 @@ class Database():
             f.decrypt(record[0][1].encode("utf-8"))
             return True
         except:
-            print("Wrong key! Try again.")
             return False
 
     def createTable(self):

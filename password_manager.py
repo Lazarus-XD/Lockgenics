@@ -1,9 +1,9 @@
 import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QMainWindow
-from data_window import Ui_DataWindow
-from new_user_window import Ui_createUserWidget
-from database import *
+from modules.data_window import Ui_DataWindow
+from modules.new_user_window import Ui_createUserWidget
+from modules.database import *
 
 class Ui_LoginWindow(QMainWindow):
     def __init__(self):
@@ -33,7 +33,7 @@ class Ui_LoginWindow(QMainWindow):
 
         #icon setup
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap("modules/icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.setWindowIcon(icon)
 
         #font setup
@@ -92,12 +92,7 @@ class Ui_LoginWindow(QMainWindow):
         self.passwordInput = QtWidgets.QLineEdit(self.centralwidget)
         self.passwordInput.setGeometry(QtCore.QRect(100, 350, 601, 40))
         self.passwordInput.setFont(font)
-        self.passwordInput.setInputMethodHints(QtCore.Qt.ImhNone)
-        self.passwordInput.setCursorPosition(0)
         self.passwordInput.setAlignment(QtCore.Qt.AlignCenter)
-        self.passwordInput.setPlaceholderText("")
-        self.passwordInput.setCursorMoveStyle(QtCore.Qt.LogicalMoveStyle)
-        self.passwordInput.setClearButtonEnabled(False)
         self.passwordInput.setObjectName("passwordInput")
         self.passwordInput.setEchoMode(QtWidgets.QLineEdit.Password)
 
@@ -196,6 +191,7 @@ class Ui_LoginWindow(QMainWindow):
         self.dataWindow.show()
         self.dataWindow.username = self.username
         self.dataWindow.key = self.password
+        self.dataWindow.addComboBoxItems()
         self.dataWindow.exitButton.clicked.connect(self.exitButtonAction)
 
 
