@@ -149,6 +149,7 @@ class Ui_LoginWindow(QMainWindow):
     def loginButtonAction(self):
         self.username = self.usernameInput.text()
         self.password = self.passwordInput.text()
+
         if self.db.checkPass(self.username, self.password):
             self.openDataWindow()
         else:
@@ -168,6 +169,7 @@ class Ui_LoginWindow(QMainWindow):
         self.username = self.newUserWindow.newUserInput.text()
         self.db.cur.execute("SELECT COUNT(username) FROM info WHERE username = ?", (self.username,))
         record = self.db.cur.fetchone()[0]
+
         if record == 0 and self.username != "":
             self.db.storeUser(self.username)
             key = self.db.generateKey(self.username)
@@ -193,7 +195,7 @@ class Ui_LoginWindow(QMainWindow):
         self.hide()
         self.dataWindow.show()
         self.dataWindow.username = self.username
-        self.dataWindow.password = self.password
+        self.dataWindow.key = self.password
         self.dataWindow.exitButton.clicked.connect(self.exitButtonAction)
 
 

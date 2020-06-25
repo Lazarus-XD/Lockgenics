@@ -14,17 +14,9 @@ class Database():
         self.cur.execute("INSERT INTO info (username) VALUES (?)", (username,))
         self.conn.commit()
 
-    def addServiceAndPass(self, username, key):
+    def addServiceAndPass(self, service, username, password, key):
         """Store the randomly generated password in the selected service column"""
-        service = input("Enter the service name: ")
-        while True:
-            print("\n1. Manually enter password")
-            print("2. Generate random password")
-            passInfo = input("Enter your choice (1/2): ")
-            if passInfo == "1" or passInfo == "2":
-                break
         columns = [i[1] for i in self.cur.execute("PRAGMA table_info(info)")]
-
         if service not in columns:
             self.cur.execute("ALTER TABLE info ADD COLUMN '{}' TEXT".format(service))
             self.conn.commit()
@@ -32,12 +24,7 @@ class Database():
         self.cur.execute("SELECT COUNT({}) FROM info WHERE username = ?".format(service), (username,))
         record = self.cur.fetchone()[0]
 
-        if record == 0 and passInfo == "2":
-            self.cur.execute("UPDATE info SET {} = '{}' WHERE username = ?".format(service, self.generatePass(key)), (username,))
-            self.conn.commit()
-
-        if record == 0 and passInfo == "1":
-            password = input("Enter your password: ")
+        if record == 0:
             f = Fernet(key)
             token = f.encrypt(password.encode("utf-8")).decode("utf-8")
             self.cur.execute("UPDATE info SET {} = '{}' WHERE username = ?".format(service, token), (username,))
@@ -61,14 +48,10 @@ class Database():
         passwordList = list(password)
         random.shuffle(passwordList)
         random.shuffle(passwordList)
-        password = ''.join(passwordList)
-        try:
-            print("\nGenerated password:", password)
-            f = Fernet(key)
-            token = f.encrypt(password.encode("utf-8"))
-            return token.decode("utf-8")
-        except:
-            print("Invalid key")
+        password = "".join(passwordList)
+        f = Fernet(key)
+        token = f.encrypt(password.encode("utf-8"))
+        return (token.decode("utf-8"), password)
 
     def generateKey(self, username):
         """Generate the encryption key and store it in a seperate txt file"""

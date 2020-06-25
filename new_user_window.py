@@ -44,8 +44,7 @@ class Ui_createUserWidget(QMainWindow):
         self.label.setFont(font)
         self.label.setObjectName("label")
 
-        font.setFamily("Bahnschrift SemiLight SemiConde")
-        font.setPointSize(12)
+        font.setPointSize(13)
         self.newUserInput = QtWidgets.QLineEdit(self)
         self.newUserInput.setGeometry(QtCore.QRect(30, 60, 351, 41))
         self.newUserInput.setFont(font)
@@ -55,7 +54,6 @@ class Ui_createUserWidget(QMainWindow):
 
         self.createUserButton = QtWidgets.QPushButton(self)
         self.createUserButton.setGeometry(QtCore.QRect(140, 120, 131, 41))
-        font.setFamily("Bahnschrift SemiBold SemiConden")
         font.setPointSize(12)
         self.createUserButton.setFont(font)
         self.createUserButton.setObjectName("createUserButton")
@@ -71,11 +69,9 @@ class Ui_createUserWidget(QMainWindow):
         self.createUserButton.setText(_translate("createUserWidget", "CREATE USER"))
 
 
-# if __name__ == "__main__":
-#     import sys
-#     app = QtWidgets.QApplication(sys.argv)
-#     createUserWidget = QtWidgets.QWidget()
-#     ui = Ui_createUserWidget()
-#     ui.setupUi(createUserWidget)
-#     createUserWidget.show()
-#     sys.exit(app.exec_())
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    createUserWidget = Ui_createUserWidget()
+    createUserWidget.show()
+    sys.exit(app.exec_())

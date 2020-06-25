@@ -66,7 +66,6 @@ class Ui_newServiceWidget(QMainWindow):
 
         self.serviceInput = QtWidgets.QLineEdit(self)
         self.serviceInput.setGeometry(QtCore.QRect(40, 80, 571, 41))
-        font.setFamily("Bahnschrift SemiLight SemiConde")
         self.serviceInput.setFont(font)
         self.serviceInput.setAlignment(QtCore.Qt.AlignCenter)
         self.serviceInput.setObjectName("lineEdit")

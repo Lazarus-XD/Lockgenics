@@ -1,6 +1,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QMainWindow
 from database import *
+import sqlite3
 from new_service_window import Ui_newServiceWidget
 
 class Ui_DataWindow(QMainWindow):
@@ -10,7 +11,7 @@ class Ui_DataWindow(QMainWindow):
         self.db = Database()
         self.counter = 0
         self.username = None
-        self.password = None
+        self.key = None
 
     def setupUi(self):
         self.setObjectName("DataWindow")
@@ -28,8 +29,8 @@ class Ui_DataWindow(QMainWindow):
 
         #font setup
         font = QtGui.QFont()
-        font.setFamily("Bahnschrift SemiLight SemiConde")
-        font.setPointSize(14)
+        font.setFamily("Bahnschrift SemiBold SemiConden")
+        font.setPointSize(13)
         self.setFont(font)
 
         #icon setup
@@ -79,7 +80,6 @@ class Ui_DataWindow(QMainWindow):
         self.urlEdit.setReadOnly(True)
 
         #label setup
-        font.setFamily("Bahnschrift SemiBold SemiConden")
         self.label = QtWidgets.QLabel(self.centralwidget)
         self.label.setGeometry(QtCore.QRect(230, 20, 91, 41))
         self.label.setPalette(palette)
@@ -198,12 +198,29 @@ class Ui_DataWindow(QMainWindow):
         self.newServiceWindow.genPassButton.clicked.connect(self.genPassButtonAction)
 
     def confirmButtonAction(self):
-        pass
+        msg = QtWidgets.QMessageBox()
+        service = self.newServiceWindow.serviceInput.text().lower()
+        password = self.newServiceWindow.passwordInput.text()
+        self.db.cur.execute("SELECT COUNT({}) FROM info WHERE username = ?".format(service), (self.username,))
+        record = self.db.cur.fetchone()[0]
+
+        if service == "" or password == "":
+            msg.setWindowTitle("Error")
+            msg.setText("Service or Password Field Cannot be Empty!")
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            msg.exec_()
+        elif record != 0:
+            msg.setWindowTitle("Error")
+            msg.setText("Cannot Have Duplicate Service!")
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            msg.exec_()
+        else:
+            self.db.addServiceAndPass(service, self.username, password, self.key)
+            self.newServiceWindow.hide()
 
     def genPassButtonAction(self):
         _translate = QtCore.QCoreApplication.translate
-        Pass = self.db.generatePass(self.password)
-        print(Pass)
+        Pass = self.db.generatePass(self.key)[1]
         self.newServiceWindow.passwordInput.setText(_translate("newServiceWidget", "{}".format(Pass)))
 
 
