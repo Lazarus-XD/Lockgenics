@@ -1,8 +1,8 @@
 import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QMainWindow
-from modules.data_window import Ui_DataWindow
-from modules.new_user_window import Ui_createUserWidget
+from modules.info import Ui_DataWindow
+from modules.new_user import Ui_createUserWidget
 from modules.database import *
 
 class Ui_LoginWindow(QMainWindow):
@@ -167,7 +167,7 @@ class Ui_LoginWindow(QMainWindow):
 
         if record == 0 and self.username != "":
             self.db.storeUser(self.username)
-            key = self.db.generateKey(self.username)
+            self.password = self.db.generateKey(self.username)
             msg.setWindowTitle("Information")
             msg.setText("The master key was stored in {}(key).txt\nStore it in a secure place!".format(self.username))
             msg.setIcon(QtWidgets.QMessageBox.Information)

@@ -1,8 +1,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QMainWindow
 from modules.database import *
-from modules.new_service_window import Ui_newServiceWidget
-
+from modules.new_service import Ui_newServiceWidget
 
 class Ui_DataWindow(QMainWindow):
     def __init__(self):
@@ -240,9 +239,10 @@ class Ui_DataWindow(QMainWindow):
         else:
             self.db.addServiceAndPass(service, self.username, password, self.key)
             self.newServiceWindow.hide()
-            self.servicesComboBox.addItem(service)
-            index = self.servicesComboBox.findText(service, QtCore.Qt.MatchFixedString)
+            self.servicesComboBox.addItem(service1)
+            index = self.servicesComboBox.findText(service1, QtCore.Qt.MatchFixedString)
             self.servicesComboBox.setCurrentIndex(index)
+            self.editButtonAction()
 
     def genPassButtonAction(self):
         _translate = QtCore.QCoreApplication.translate

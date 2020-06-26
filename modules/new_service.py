@@ -10,7 +10,7 @@ class Ui_newServiceWidget(QMainWindow):
         self.setObjectName("newServiceWidget")
         self.setFixedSize(646, 409)
 
-        # background setup
+        #background setup
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(135, 0, 202))
         brush.setStyle(QtCore.Qt.SolidPattern)
@@ -20,7 +20,7 @@ class Ui_newServiceWidget(QMainWindow):
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
         self.setPalette(palette)
 
-        # icon setup
+        #icon setup
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("modules/icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.setWindowIcon(icon)
