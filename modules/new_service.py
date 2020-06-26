@@ -22,7 +22,7 @@ class Ui_newServiceWidget(QMainWindow):
 
         #icon setup
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("modules/icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap("icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.setWindowIcon(icon)
 
         #text white color setup
@@ -88,11 +88,3 @@ class Ui_newServiceWidget(QMainWindow):
         self.passwordInput.setPlaceholderText(_translate("newServiceWidget", "Enter or Generate Password"))
         self.confirmButton.setText(_translate("newServiceWidget", "Confirm"))
         self.genPassButton.setText(_translate("newServiceWidget", "Generate Password"))
-
-
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    newServiceWindow = Ui_newServiceWidget()
-    newServiceWindow.show()
-    sys.exit(app.exec_())

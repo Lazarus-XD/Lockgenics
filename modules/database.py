@@ -1,6 +1,5 @@
 import sqlite3
 from cryptography.fernet import Fernet
-import cryptography
 import random
 import string
 
@@ -16,17 +15,6 @@ class Database():
         """
         self.cur.execute("INSERT INTO user_info (username) VALUES (?)", (username,))
         self.conn.commit()
-
-    def addServiceAndPass(self, service, username, password, key):
-        """Store the randomly generated password in the selected service column"""
-        self.cur.execute("SELECT COUNT({}) FROM user_info WHERE username = ?".format(service), (username,))
-        record = self.cur.fetchone()[0]
-
-        if record == 0:
-            f = Fernet(key)
-            token = f.encrypt(password.encode("utf-8")).decode("utf-8")
-            self.cur.execute("UPDATE user_info SET {} = '{}' WHERE username = ?".format(service, token), (username,))
-            self.conn.commit()
 
     def generatePass(self, key):
         """
@@ -120,18 +108,29 @@ class Database():
         self.cur.execute(query.format("email", Email), (main_username, service))
         self.cur.execute(query.format("url", URL), (main_username, service))
         self.conn.commit()
-        columns = [i[1] for i in self.cur.execute("PRAGMA table_info(service_info)")]
-        print(columns)
 
     def fetchData(self, key, main_username, service):
-        """Fetches all info related to the service"""
+        """
+        Fetches all info related to the service
+        :param key: str
+        :param main_username: str
+        :param service: str
+        :return: list
+        """
         self.cur.execute("SELECT * FROM service_info WHERE main_username = ? AND service = ?", (main_username, service))
         record = self.cur.fetchall()
         f = Fernet(key)
+        data = []
 
         for row in record:
-            for data in range(len(row)-2):
-                print(f.decrypt(row[data + 2].encode("utf-8")).decode("utf-8"))
+            for value in range(len(row)-2):
+                try:
+                    data.append(f.decrypt(row[value + 2].encode("utf-8")).decode("utf-8"))
+                except AttributeError:
+                    data.append("")
+                    continue
+
+        return data
 
     def createTable(self):
         """Creates the two tables in the database"""
@@ -147,13 +146,3 @@ class Database():
                                  url TEXT,
                                  FOREIGN KEY(main_username) REFERENCES user_info(username) ON DELETE SET NULL)""")
         self.conn.commit()
-
-
-if __name__ == "__main__":
-    db = Database()
-    db.createTable()
-    # db.storeUser("Rizwan")
-    # db.generateKey("Rizwan")
-    db.addData("Rizwan", "epic_games")
-    db.updateData("bVzjaihbHJkd_2S6sLEz6NSVk0BnI6uXZSEM98-QJzo=", "Rizwan", "Rizwan123", "epic_games", "Hello123abc", "rizahsan@gmail.com", "www.epic.com")
-    db.fetchData("bVzjaihbHJkd_2S6sLEz6NSVk0BnI6uXZSEM98-QJzo=", "Rizwan", "epic_games")

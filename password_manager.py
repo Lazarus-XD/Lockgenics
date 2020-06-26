@@ -33,7 +33,7 @@ class Ui_LoginWindow(QMainWindow):
 
         #icon setup
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("modules/icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap("icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.setWindowIcon(icon)
 
         #font setup
@@ -82,13 +82,14 @@ class Ui_LoginWindow(QMainWindow):
         self.borderLabel.setObjectName("borderLabel")
 
         #text input setup
-        font.setPointSize(12)
+        font.setPointSize(13)
         self.usernameInput = QtWidgets.QLineEdit(self.centralwidget)
         self.usernameInput.setGeometry(QtCore.QRect(100, 250, 601, 40))
         self.usernameInput.setFont(font)
         self.usernameInput.setAlignment(QtCore.Qt.AlignCenter)
         self.usernameInput.setObjectName("usernameInput")
 
+        font.setPointSize(13)
         self.passwordInput = QtWidgets.QLineEdit(self.centralwidget)
         self.passwordInput.setGeometry(QtCore.QRect(100, 350, 601, 40))
         self.passwordInput.setFont(font)
@@ -162,7 +163,7 @@ class Ui_LoginWindow(QMainWindow):
     def newUserButtonAction(self):
         msg = QtWidgets.QMessageBox()
         self.username = self.newUserWindow.newUserInput.text()
-        self.db.cur.execute("SELECT COUNT(username) FROM info WHERE username = ?", (self.username,))
+        self.db.cur.execute("SELECT COUNT(username) FROM user_info WHERE username = ?", (self.username,))
         record = self.db.cur.fetchone()[0]
 
         if record == 0 and self.username != "":

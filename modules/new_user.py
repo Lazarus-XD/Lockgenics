@@ -22,7 +22,7 @@ class Ui_createUserWidget(QMainWindow):
 
         #icon setup
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("modules/icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap("icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.setWindowIcon(icon)
 
         #text white color setup
@@ -67,11 +67,3 @@ class Ui_createUserWidget(QMainWindow):
         self.label.setText(_translate("createUserWidget", "Username:"))
         self.newUserInput.setPlaceholderText(_translate("createUserWidget", "Enter Username"))
         self.createUserButton.setText(_translate("createUserWidget", "CREATE USER"))
-
-
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    createUserWidget = Ui_createUserWidget()
-    createUserWidget.show()
-    sys.exit(app.exec_())

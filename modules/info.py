@@ -8,7 +8,7 @@ class Ui_DataWindow(QMainWindow):
         super(Ui_DataWindow, self).__init__()
         self.setupUi()
         self.db = Database()
-        self.columns = [i[1] for i in self.db.cur.execute("PRAGMA table_info(info)")]
+        self.columns = [i[1] for i in self.db.cur.execute("PRAGMA table_info(service_info)")]
         self.counter = 0
         self.username = None
         self.key = None
@@ -35,7 +35,7 @@ class Ui_DataWindow(QMainWindow):
 
         #icon setup
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("modules/icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap("icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.setWindowIcon(icon)
 
         #text white color setup
@@ -137,7 +137,6 @@ class Ui_DataWindow(QMainWindow):
         self.servicesComboBox.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.servicesComboBox.setSizeAdjustPolicy(QtWidgets.QComboBox.AdjustToContentsOnFirstShow)
         self.servicesComboBox.setObjectName("servicesComboBox")
-        # self.servicesComboBox.addItem("")
 
         self.setCentralWidget(self.centralwidget)
 
@@ -145,26 +144,23 @@ class Ui_DataWindow(QMainWindow):
         QtCore.QMetaObject.connectSlotsByName(self)
 
     def addComboBoxItems(self):
-        self.db.cur.execute("SELECT * FROM info WHERE username = ?", (self.username,))
+        self.db.cur.execute("SELECT * FROM service_info WHERE main_username = ?", (self.username,))
         record = self.db.cur.fetchall()
         f = Fernet(self.key)
 
         for row in record:
-            for data in range(len(row)-2):
-                try:
-                    if type(f.decrypt(row[data+2].encode("utf-8")).decode("utf-8")) == str:
-                        item = self.columns[data+2]
-                        item = item.split("_")
-                        item = " ".join(item)
-                        self.servicesComboBox.addItem(item)
-                except AttributeError:
-                    continue
+            try:
+                item = row[1]
+                item = item.split("_")
+                item = " ".join(item)
+                self.servicesComboBox.addItem(item)
+            except AttributeError:
+                continue
 
     def retranslateUi(self, DataWindow):
         _translate = QtCore.QCoreApplication.translate
         DataWindow.setWindowTitle(_translate("DataWindow", "Password Manager"))
         self.addServiceButton.setText(_translate("DataWindow", "Add New Service"))
-        # self.servicesComboBox.setItemText(0, _translate("DataWindow", "facebook"))
         self.label.setText(_translate("DataWindow", "Services:"))
         self.label_2.setText(_translate("DataWindow", "Username:"))
         self.label_3.setText(_translate("DataWindow", "Password:"))
@@ -172,7 +168,6 @@ class Ui_DataWindow(QMainWindow):
         self.label_5.setText(_translate("DataWindow", "URL:"))
         self.editButton.setText(_translate("DataWindow", "Edit"))
         self.exitButton.setText(_translate("DataWindow", "Exit"))
-        self.usernameEdit.setText(_translate("DataWindow", "RizwanAhsan"))
         self.usernameEdit.setPlaceholderText(_translate("DataWindow", "Enter Username"))
         self.passwordEdit.setPlaceholderText(_translate("DataWindow", "Enter Password"))
         self.emailEdit.setPlaceholderText(_translate("DataWindow", "Enter Email Address"))
@@ -181,7 +176,17 @@ class Ui_DataWindow(QMainWindow):
         #button clicking action
         self.editButton.clicked.connect(self.editButtonAction)
         self.addServiceButton.clicked.connect(self.addServiceButtonAction)
+        self.servicesComboBox.currentIndexChanged.connect(self.outputData)
         self.exitButton.clicked.connect(self.close)
+
+    def outputData(self):
+        _translate = QtCore.QCoreApplication.translate
+        service = self.servicesComboBox.currentText()
+        data = self.db.fetchData(self.key, self.username, service)
+        self.usernameEdit.setText(_translate("DataWindow", data[0]))
+        self.passwordEdit.setText(_translate("DataWindow", data[1]))
+        self.emailEdit.setText(_translate("DataWindow", data[2]))
+        self.urlEdit.setText(_translate("DataWindow", data[3]))
 
     def editButtonAction(self):
         _translate = QtCore.QCoreApplication.translate
@@ -202,6 +207,12 @@ class Ui_DataWindow(QMainWindow):
         if self.counter % 2 == 0:
             self.editButton.setText(_translate("DataWindow", "Edit"))
             setReadyOnly()
+            service_username = self.usernameEdit.text()
+            service = self.servicesComboBox.currentText()
+            password = self.passwordEdit.text()
+            email = self.emailEdit.text()
+            url = self.urlEdit.text()
+            self.db.updateData(self.key, self.username, service_username, service, password, email, url)
         else:
             self.editButton.setText(_translate("DataWindow", "Save Changes"))
             setEdit()
@@ -213,17 +224,14 @@ class Ui_DataWindow(QMainWindow):
         self.newServiceWindow.genPassButton.clicked.connect(self.genPassButtonAction)
 
     def confirmButtonAction(self):
+        _translate = QtCore.QCoreApplication.translate
         msg = QtWidgets.QMessageBox()
         service1 = self.newServiceWindow.serviceInput.text().lower()
         service = service1.split()
         service = "_".join(service)
         password = self.newServiceWindow.passwordInput.text()
 
-        if service not in self.columns:
-            self.db.cur.execute("ALTER TABLE info ADD COLUMN '{}' TEXT".format(service))
-            self.db.conn.commit()
-
-        self.db.cur.execute("SELECT COUNT({}) FROM info WHERE username = ?".format(service), (self.username,))
+        self.db.cur.execute("SELECT COUNT(service) FROM service_info WHERE main_username = ? AND service = ?".format("service"), (self.username, service))
         record = self.db.cur.fetchone()[0]
 
         if service1 == "" or password == "":
@@ -237,7 +245,9 @@ class Ui_DataWindow(QMainWindow):
             msg.setIcon(QtWidgets.QMessageBox.Critical)
             msg.exec_()
         else:
-            self.db.addServiceAndPass(service, self.username, password, self.key)
+            self.db.addData(self.username, service)
+            self.db.updateData(self.key, self.username, "", service, password, "", "")
+            self.passwordEdit.setText(_translate("DataWindow", password))
             self.newServiceWindow.hide()
             self.servicesComboBox.addItem(service1)
             index = self.servicesComboBox.findText(service1, QtCore.Qt.MatchFixedString)
@@ -248,11 +258,3 @@ class Ui_DataWindow(QMainWindow):
         _translate = QtCore.QCoreApplication.translate
         Pass = self.db.generatePass(self.key)[1]
         self.newServiceWindow.passwordInput.setText(_translate("newServiceWidget", "{}".format(Pass)))
-
-
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    DataWindow = Ui_DataWindow()
-    DataWindow.show()
-    sys.exit(app.exec_())
