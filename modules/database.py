@@ -3,7 +3,6 @@ from cryptography.fernet import Fernet
 import cryptography
 import random
 import string
-import stdiomask
 
 class Database():
     def __init__(self):
@@ -11,22 +10,30 @@ class Database():
         self.cur = self.conn.cursor()
 
     def storeUser(self, username):
-        self.cur.execute("INSERT INTO info (username) VALUES (?)", (username,))
+        """
+        Stores the username in the database
+        :param username: str
+        """
+        self.cur.execute("INSERT INTO user_info (username) VALUES (?)", (username,))
         self.conn.commit()
 
     def addServiceAndPass(self, service, username, password, key):
         """Store the randomly generated password in the selected service column"""
-        self.cur.execute("SELECT COUNT({}) FROM info WHERE username = ?".format(service), (username,))
+        self.cur.execute("SELECT COUNT({}) FROM user_info WHERE username = ?".format(service), (username,))
         record = self.cur.fetchone()[0]
 
         if record == 0:
             f = Fernet(key)
             token = f.encrypt(password.encode("utf-8")).decode("utf-8")
-            self.cur.execute("UPDATE info SET {} = '{}' WHERE username = ?".format(service, token), (username,))
+            self.cur.execute("UPDATE user_info SET {} = '{}' WHERE username = ?".format(service, token), (username,))
             self.conn.commit()
 
     def generatePass(self, key):
-        """Generate a random 25 char password containing lowercase, uppercase, numbers and special chars"""
+        """
+        Generate a random 25 char password containing lowercase, uppercase, numbers and special chars
+        :param key: str
+        :return: tuple
+        """
         password = ""
         randomSource = string.ascii_letters + string.digits + string.punctuation
 
@@ -49,11 +56,15 @@ class Database():
         return (token.decode("utf-8"), password)
 
     def generateKey(self, username):
-        """Generate the encryption key and store it in a seperate txt file"""
+        """
+        Generate the encryption key and store it in a seperate txt file
+        :param username: str
+        :return: bytes
+        """
         key = Fernet.generate_key()
         k = Fernet(key)
         token = k.encrypt("value".encode("utf-8")).decode("utf-8")
-        self.cur.execute("UPDATE info SET check_key = '{}' WHERE username = ?".format(token), (username,))
+        self.cur.execute("UPDATE user_info SET check_key = '{}' WHERE username = ?".format(token), (username,))
         self.conn.commit()
 
         with open(username + "(key).txt", "w") as f:
@@ -63,37 +74,16 @@ class Database():
             f.write("\n")
             f.write(key.decode("utf-8"))
             f.close()
-
         return key
 
-    def fetchData(self, username, key):
-        passStored = printed = False
-        self.cur.execute("SELECT * FROM info WHERE username = ?", (username,))
-        record = self.cur.fetchall()
-        columns = [i[1] for i in self.cur.execute("PRAGMA table_info(info)")]
-        f = Fernet(key)
-
-        for row in record:
-            if len(row) == 2:
-                print("You have no stored passwords!")
-            for data in range(len(row)-2):
-                try:
-                    if type(f.decrypt(row[data+2].encode("utf-8")).decode("utf-8")) == str:
-                        print(columns[data+2], end=": ")
-                        print(f.decrypt(row[data+2].encode("utf-8")).decode("utf-8"))
-                        passStored = True
-                except AttributeError:
-                    continue
-                except cryptography.fernet.InvalidToken:
-                    print("Invalid Token")
-                    break
-                if not passStored and not printed:
-                    print("You have no stored passwords!")
-                    printed = True
-
     def checkPass(self, username, key):
-        """Checks if the entered master key is correct"""
-        self.cur.execute("SELECT * FROM info WHERE username = ?", (username,))
+        """
+        Checks if the entered master key is correct
+        :param username: str
+        :param key: str
+        :return: bool
+        """
+        self.cur.execute("SELECT * FROM user_info WHERE username = ?", (username,))
         record = self.cur.fetchall()
         try:
             f = Fernet(key)
@@ -102,57 +92,68 @@ class Database():
         except:
             return False
 
+    def addData(self, main_username, service):
+        """
+        Add main_username and service info to the service_info table
+        :param main_username: sr
+        :param service: str
+        """
+        self.cur.execute("SELECT COUNT(service) FROM service_info WHERE main_username = ? AND service = ?".format("service"), (main_username, service))
+        record = self.cur.fetchone()[0]
+        query = "INSERT INTO service_info (main_username, service) VALUES (?, ?)"
+
+        if record == 0:
+            self.cur.execute(query, (main_username, service))
+            self.conn.commit()
+
+    def updateData(self, key, main_username, service_username, service, password, email, url):
+        """Updates the remaining info in the service_info table"""
+        f = Fernet(key)
+        query = "UPDATE service_info SET {} = '{}' WHERE main_username = ? and service = ?"
+        serviceU = f.encrypt(service_username.encode("utf-8")).decode("utf-8")
+        pw = f.encrypt(password.encode("utf-8")).decode("utf-8")
+        Email = f.encrypt(email.encode("utf-8")).decode("utf-8")
+        URL = f.encrypt(url.encode("utf-8")).decode("utf-8")
+
+        self.cur.execute(query.format("service_username", serviceU), (main_username, service))
+        self.cur.execute(query.format("password", pw), (main_username, service))
+        self.cur.execute(query.format("email", Email), (main_username, service))
+        self.cur.execute(query.format("url", URL), (main_username, service))
+        self.conn.commit()
+        columns = [i[1] for i in self.cur.execute("PRAGMA table_info(service_info)")]
+        print(columns)
+
+    def fetchData(self, key, main_username, service):
+        """Fetches all info related to the service"""
+        self.cur.execute("SELECT * FROM service_info WHERE main_username = ? AND service = ?", (main_username, service))
+        record = self.cur.fetchall()
+        f = Fernet(key)
+
+        for row in record:
+            for data in range(len(row)-2):
+                print(f.decrypt(row[data + 2].encode("utf-8")).decode("utf-8"))
+
     def createTable(self):
-        self.cur.execute("""CREATE TABLE IF NOT EXISTS info
+        """Creates the two tables in the database"""
+        self.cur.execute("""CREATE TABLE IF NOT EXISTS user_info
                         (username TEXT PRIMARY KEY NOT NULL,
                          check_key TEXT)""")
+        self.cur.execute("""CREATE TABLE IF NOT EXISTS service_info
+                                (main_username TEXT NOT NULL,
+                                 service TEXT NOT NULL,
+                                 service_username TEXT,
+                                 password TEXT,
+                                 email TEXT,
+                                 url TEXT,
+                                 FOREIGN KEY(main_username) REFERENCES user_info(username) ON DELETE SET NULL)""")
         self.conn.commit()
 
-    def main(self):
-        createUser = "n"
-        while True:
-            username = input("Enter your username: ")
-            self.cur.execute("SELECT COUNT(username) FROM info WHERE username = ?", (username,))
-            record = self.cur.fetchone()[0]
-            if record == 0:
-                while True:
-                    createUser = input("Username does not exist. Do you want to create a new? Enter y or n: ")
-                    if createUser == "y" or createUser == "n":
-                        break
-
-                if createUser == "y":
-                    self.storeUser(username)
-                    key = self.generateKey(username)
-                    print("Your info has been stored in the database.")
-                    break
-
-            if createUser == "n" and record != 0:
-                while True:
-                    key = stdiomask.getpass(prompt="Enter your master key: ", mask="*").encode("utf-8")
-                    if self.checkPass(username, key):
-                        break
-                break
-
-        while True:
-            while True:
-                print("\n1. Add a new service")
-                print("2. Access your stored passwords")
-                print("3. Exit password manager")
-                answer = input("Enter your choice (1/2/3): ")
-                if answer == "1" or answer == "2" or answer == "3":
-                    break
-
-            if answer == "1":
-                self.addServiceAndPass(username, key)
-
-            if answer == "2":
-                self.fetchData(username, key)
-
-            if answer == "3":
-                break
 
 if __name__ == "__main__":
-    data = Database()
-    data.createTable()
-    data.main()
-    data.conn.close()
+    db = Database()
+    db.createTable()
+    # db.storeUser("Rizwan")
+    # db.generateKey("Rizwan")
+    db.addData("Rizwan", "epic_games")
+    db.updateData("bVzjaihbHJkd_2S6sLEz6NSVk0BnI6uXZSEM98-QJzo=", "Rizwan", "Rizwan123", "epic_games", "Hello123abc", "rizahsan@gmail.com", "www.epic.com")
+    db.fetchData("bVzjaihbHJkd_2S6sLEz6NSVk0BnI6uXZSEM98-QJzo=", "Rizwan", "epic_games")
