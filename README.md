@@ -11,3 +11,5 @@ To install the packages type in terminal:
 ```{r, engine='bash', count_lines}
 pip install -r requirements.txt
 ```
+## Video Demo
+![password_manager](https://media.giphy.com/media/ResmQtKfEy0WUqbZyI/giphy.gif)
